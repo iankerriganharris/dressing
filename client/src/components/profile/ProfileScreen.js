@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import ProfileForm from './ProfileForm';
+import { Button } from 'semantic-ui-react';
 
 export default class ProfileScreen extends Component {
 
@@ -42,7 +43,7 @@ export default class ProfileScreen extends Component {
         {editProfile ? (
           <div>
             <ProfileForm user={this.props.user} handleSubmit={this.handleSubmit}/>
-            <button onClick={this.handleClick}>Cancel</button>
+            <Button onClick={this.handleClick}>Cancel</Button>
           </div>
         ) :
           <div>
@@ -51,7 +52,7 @@ export default class ProfileScreen extends Component {
             <label>Email: </label>{this.props.user.email}<br/>
             <label>Address: </label>{this.props.user.address}<br/>
             <label>Postal code: </label>{this.props.user.zipCode}<br/>
-            <button onClick={this.handleClick}>Edit profile</button>
+            <Button onClick={this.handleClick}>Edit profile</Button>
           </div>}
       </div>
     )

@@ -1,6 +1,7 @@
 // client/src/components/profile/ProfileForm.js
 
 import React, { Component } from 'react';
+import { Button } from 'semantic-ui-react';
 
 export default class ProfileForm extends Component {
   
@@ -17,7 +18,7 @@ export default class ProfileForm extends Component {
         <input type='text' name='address' defaultValue={this.props.user.address}/><br/>
         <label>Postal Code</label>
         <input type='text' name='zipCode' defaultValue={this.props.user.zipCode}/><br/>
-        <button>Save</button>
+        <Button>Save</Button>
       </form>
     )
   }

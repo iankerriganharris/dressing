@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import LoginScreen from './components/auth/LoginScreen';
 import DashboardScreen from './components/dashboard/DashboardScreen';
+import { Button, Header } from 'semantic-ui-react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -40,15 +41,16 @@ class App extends Component {
     const logout = this.logout;
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React{loggedIn ? (', ' + loggedIn.user.username) : null}</h1>
-          {loggedIn ? <button onClick={(logout)}>Logout</button> : null}
-        </header>
-        <p className="App-intro"></p>
         {loggedIn ? (
-          <DashboardScreen user={loggedIn.user} refreshUser={this.refreshUser}/>
-        ) : <LoginScreen /> }
+          <DashboardScreen user={loggedIn.user} refreshUser={this.refreshUser} logout={this.logout}/>
+        ) :
+          <div> 
+            <header className="App-header">
+              <h1 className="App-title">Welcome to React</h1>
+            </header>
+            <LoginScreen />
+          </div>
+        }
       </div>
     );
   }

@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import PostForm from './PostForm';
+import { Button } from 'semantic-ui-react';
 
 export default class PostScreen extends Component {
 
@@ -43,10 +44,10 @@ export default class PostScreen extends Component {
         {newPost ? (
           <div>
             <PostForm user={this.props.user} handleSubmit={this.handleSubmit}/>
-            <button onClick={this.handleClick}>Cancel</button>
+            <Button onClick={this.handleClick}>Cancel</Button>
           </div>
         ) :
-          <button onClick={this.handleClick}>New post</button>}
+          <Button onClick={this.handleClick}>New post</Button>}
         {currentPosts ? (
           <div>{currentPosts.map(post => (
             <div key={post.id}>{post.description}</div>

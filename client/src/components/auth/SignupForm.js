@@ -1,24 +1,20 @@
 // client/src/components/auth/SignupForm.js
 
 import React, { Component } from 'react';
+import { Button, Input, Form, Label } from 'semantic-ui-react';
 
 class SignupForm extends Component {
   render() {
     return (
-      <div>
-        <form action="/signup" method="post">
-          <div>
-            <label>Username</label>
-            <input type="text" name="username" />
-          </div>
-          <div>
-            <label>Password</label>
-            <input type="password" name="password" />
-          </div>
-          <button type="submit">Signup</button>
-        </form>
-        <hr />
-      </div>        
+      <Form action="/signup" method="post">
+        <Form.Field>
+          <Input type="text" name="username" placeholder='Username'/>
+        </Form.Field>
+        <Form.Field>
+          <Input type="password" name="password" placeholder='Password'/>
+        </Form.Field>
+        <Button type="submit">Signup</Button>
+      </Form>   
     )
   }
 }

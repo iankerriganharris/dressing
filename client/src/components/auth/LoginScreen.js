@@ -4,6 +4,7 @@
 import React, { Component } from 'react';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
+import { Button, Segment, Divider, Grid } from 'semantic-ui-react';
 
 class LoginScreen extends Component {
 
@@ -22,21 +23,24 @@ class LoginScreen extends Component {
   render() {
     var activeForm = this.state.activeForm;
     return (
-      <div>
+      <Grid centered>
+        <Grid.Row>
         {activeForm === 'LOGIN' ? (
-          <div>
+          <Grid.Column textAlign='centered' width={4}>
             <LoginForm />
-            <button type="button" onClick={(e) => this.handleClick('SIGNUP')}>Signup</button>
-          </div>
+            <Divider horizontal></Divider>
+            <Button type="button" onClick={(e) => this.handleClick('SIGNUP')}>Signup</Button>
+          </Grid.Column>
         ) : activeForm === 'SIGNUP' ? (
-          <div>
+          <Grid.Column textAlign='centered' width={4}>
             <SignupForm />
-            <button type="button" onClick={(e) => this.handleClick('LOGIN')}>Back to Login</button>
-            </div>
+            <Divider horizontal></Divider>
+            <Button type="button" onClick={(e) => this.handleClick('LOGIN')}>Back to Login</Button>
+          </Grid.Column>
         ) : null
         }
-        
-      </div>
+        </Grid.Row>
+      </Grid>
     );
   }
 }

@@ -1,6 +1,7 @@
 // client/src/components/post/PostForm.js
 
 import React, { Component } from 'react';
+import { Button } from 'semantic-ui-react';
 
 export default class PostForm extends Component {
   
@@ -11,7 +12,7 @@ export default class PostForm extends Component {
         <input type='text' name='description'/><br/>
         <label>URL</label>
         <input type='text' name='url'/><br/>
-        <button>Save</button>
+        <Button>Save</Button>
       </form>
     )
   }

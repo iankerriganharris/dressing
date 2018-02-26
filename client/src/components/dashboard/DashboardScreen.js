@@ -1,7 +1,7 @@
 // client/src/components/dashboard/DashboardScreen.js
 
 import React, { Component } from 'react'
-import { Button, Segment, Menu, Header, Sidebar } from 'semantic-ui-react'
+import { Button, Segment, Menu, Header, Sidebar, Icon, Image } from 'semantic-ui-react'
 import ProfileScreen from '../profile/ProfileScreen';
 import PostScreen from '../post/PostScreen';
 import FollowScreen from '../follow/FollowScreen';
@@ -9,6 +9,7 @@ import FollowScreen from '../follow/FollowScreen';
 export default class DashboardScreen extends Component {
   state = {
     currentScreen: 'Home',
+    currentFilter: 'others',
     currentPosts: [],
     followingPosts: [],
     visible: false,
@@ -26,9 +27,10 @@ export default class DashboardScreen extends Component {
     .then(res => this.setState({followingPosts: res}));
   };
   
-  updateNav = (screen) => {
+  updateNav = (screen, filter='others') => {
     this.setState({
       currentScreen: screen,
+      currentFilter: filter,
     });
   };
 
@@ -43,7 +45,7 @@ export default class DashboardScreen extends Component {
     return body;
   };
 
-  toggleVisibility = () => this.setState({visible: !this.state.visible})
+  toggleVisibility = () => this.setState({visible: !this.state.visible});
 
   render() {
     const currentScreen = this.state.currentScreen;
@@ -51,7 +53,8 @@ export default class DashboardScreen extends Component {
     return(
       <div>
         <Menu pointing secondary>
-          <Menu.Item name='home' active={currentScreen === 'Home'} onClick={(e) => this.updateNav('Home')}/>
+          <Menu.Item name='home' active={currentScreen === 'Home'} 
+            onClick={(e) => {this.updateNav('Home'); this.toggleVisibility();}}/>
           <Menu.Item name='follow' active={currentScreen === 'Follow'} onClick={(e) => this.updateNav('Follow')}/>
           <Menu.Menu position='right'>
             <Menu.Item name='profile' active={currentScreen === 'Profile'}
@@ -59,10 +62,26 @@ export default class DashboardScreen extends Component {
             <Menu.Item name='logout' active={currentScreen === 'logout'} onClick={this.props.logout}/>
           </Menu.Menu>
         </Menu>
-        {currentScreen === 'Home' ? (
-          <PostScreen refreshPosts={this.refreshPosts} currentPosts={this.state.currentPosts}
-            followingPosts={this.state.followingPosts}/>
-        ) : currentScreen === 'Follow' ? (
+        <Sidebar.Pushable as={Segment}>
+          <Sidebar as={Menu} animation='overlay' direction='top' visible={visible} inverted>
+            <Menu.Item name='currentPosts' onClick={(e) => this.updateNav('Home', 'own')}>
+              My Posts
+            </Menu.Item>
+            <Menu.Item name='followingPosts' onClick={(e) => this.updateNav('Home', 'others')}>
+              Current Feed
+            </Menu.Item>
+          </Sidebar>
+          <Sidebar.Pusher>
+            <Segment basic>
+              <Header as='h3'>Application Content</Header>
+              {currentScreen === 'Home' ? (
+                <PostScreen refreshPosts={this.refreshPosts} currentPosts={this.state.currentPosts}
+                  followingPosts={this.state.followingPosts} currentFilter={this.state.currentFilter}/>
+              ) : null}
+            </Segment>
+          </Sidebar.Pusher>
+        </Sidebar.Pushable>
+        {currentScreen === 'Follow' ? (
           <FollowScreen />
         ) : currentScreen === 'Profile' ? (
           <ProfileScreen user={this.props.user} refreshUser={this.props.refreshUser}/>

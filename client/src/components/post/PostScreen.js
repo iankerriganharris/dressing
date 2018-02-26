@@ -2,7 +2,7 @@
 
 import React, { Component } from 'react';
 import PostForm from './PostForm';
-import { Button } from 'semantic-ui-react';
+import { Button, Container, Feed } from 'semantic-ui-react';
 
 export default class PostScreen extends Component {
 
@@ -40,6 +40,7 @@ export default class PostScreen extends Component {
     const newPost = this.state.newPost;
     const currentPosts = this.props.currentPosts;
     const followingPosts = this.props.followingPosts;
+    const filterPosts = this.props.currentFilter;
     return(
       <div>
         {newPost ? (
@@ -49,15 +50,18 @@ export default class PostScreen extends Component {
           </div>
         ) :
           <Button onClick={this.handleClick}>New post</Button>}
-        {currentPosts ? (
-          <div>{currentPosts.map(post => (
-            <div key={post.id}>{post.description}</div>
-          ))}</div>
-        ) : null}
-        {followingPosts ? (
-          <div>{followingPosts.map(post => (
-            <div key={post.id}>{post.description}</div>
-          ))}</div>
+        {currentPosts && filterPosts === 'own' ? (
+          <Feed>{currentPosts.map(post => (
+            <Feed.Content>
+              <Feed.Summary key={post.id}>{post.description}</Feed.Summary>
+            </Feed.Content>
+          ))}</Feed>
+        ) : followingPosts && filterPosts === 'others' ? (
+          <Feed>{followingPosts.map(post => (
+            <Feed.Content>
+              <Feed.Summary key={post.id}>{post.description}</Feed.Summary>
+            </Feed.Content>
+          ))}</Feed>
         ) : null}
       </div>
     )

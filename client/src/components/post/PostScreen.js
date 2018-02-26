@@ -39,6 +39,7 @@ export default class PostScreen extends Component {
   render() {
     const newPost = this.state.newPost;
     const currentPosts = this.props.currentPosts;
+    const followingPosts = this.props.followingPosts;
     return(
       <div>
         {newPost ? (
@@ -52,7 +53,12 @@ export default class PostScreen extends Component {
           <div>{currentPosts.map(post => (
             <div key={post.id}>{post.description}</div>
           ))}</div>
-        ) : null }
+        ) : null}
+        {followingPosts ? (
+          <div>{followingPosts.map(post => (
+            <div key={post.id}>{post.description}</div>
+          ))}</div>
+        ) : null}
       </div>
     )
   }

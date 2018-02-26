@@ -32,6 +32,25 @@ router.get('/', function(req, res) {
   );
 });
 
+router.get('/following', function(req, res) {
+  const connection = mysql.createConnection(dbconfig.connection);
+  connection.query('USE ' + dbconfig.database);
+  const selectQuery =
+    `SELECT * FROM posts p
+      INNER JOIN follows f ON f.id_user = p.fk__user__post
+      WHERE f.id_follower = ?`;
+  connection.query(
+    selectQuery, req.user.id,
+    function(err, rows) {
+      if (err) {
+        console.log('SQL errors: ' + err);
+      } else {
+        return (res.json(rows));
+      }
+    }
+  );
+});
+
 // Post post.
 router.post('/new', function(req, res) {
   const connection = mysql.createConnection(dbconfig.connection);

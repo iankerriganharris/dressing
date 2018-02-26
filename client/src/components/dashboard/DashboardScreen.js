@@ -4,11 +4,13 @@ import React, { Component } from 'react'
 import { Button, Segment, Menu, Header, Sidebar } from 'semantic-ui-react'
 import ProfileScreen from '../profile/ProfileScreen';
 import PostScreen from '../post/PostScreen';
+import FollowScreen from '../follow/FollowScreen';
 
 export default class DashboardScreen extends Component {
   state = {
     currentScreen: 'Home',
     currentPosts: [],
+    followingPosts: [],
     visible: false,
     loggedIn: false,
   };
@@ -20,6 +22,8 @@ export default class DashboardScreen extends Component {
   refreshPosts = () => {
     this.callApi('/post')
     .then(res => this.setState({currentPosts: res}));
+    this.callApi('/post/following')
+    .then(res => this.setState({followingPosts: res}));
   };
   
   updateNav = (screen) => {
@@ -48,13 +52,18 @@ export default class DashboardScreen extends Component {
       <div>
         <Menu pointing secondary>
           <Menu.Item name='home' active={currentScreen === 'Home'} onClick={(e) => this.updateNav('Home')}/>
-          <Menu.Item name='profile' active={currentScreen === 'Profile'} onClick={(e) => this.updateNav('Profile')}/>
+          <Menu.Item name='follow' active={currentScreen === 'Follow'} onClick={(e) => this.updateNav('Follow')}/>
           <Menu.Menu position='right'>
+            <Menu.Item name='profile' active={currentScreen === 'Profile'}
+              onClick={(e) => this.updateNav('Profile')}/>
             <Menu.Item name='logout' active={currentScreen === 'logout'} onClick={this.props.logout}/>
           </Menu.Menu>
         </Menu>
         {currentScreen === 'Home' ? (
-          <PostScreen refreshPosts={this.refreshPosts} currentPosts={this.state.currentPosts}/>
+          <PostScreen refreshPosts={this.refreshPosts} currentPosts={this.state.currentPosts}
+            followingPosts={this.state.followingPosts}/>
+        ) : currentScreen === 'Follow' ? (
+          <FollowScreen />
         ) : currentScreen === 'Profile' ? (
           <ProfileScreen user={this.props.user} refreshUser={this.props.refreshUser}/>
         ) : null}

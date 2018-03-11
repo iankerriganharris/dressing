@@ -36,9 +36,11 @@ router.get('/following', function(req, res) {
   const connection = mysql.createConnection(dbconfig.connection);
   connection.query('USE ' + dbconfig.database);
   const selectQuery =
-    `SELECT * FROM posts p
-      INNER JOIN follows f ON f.id_user = p.fk__user__post
-      WHERE f.id_follower = ?`;
+    `SELECT p.id, p.description, p.date, u.username
+      FROM posts p
+        INNER JOIN follows f ON f.id_user = p.fk__user__post
+        INNER JOIN users u ON f.id_user = u.id
+          WHERE f.id_follower = ?`;
   connection.query(
     selectQuery, req.user.id,
     function(err, rows) {

@@ -4,16 +4,18 @@ import React, { Component } from 'react'
 import { Button, Segment, Menu, Header, Sidebar, Icon, Image } from 'semantic-ui-react'
 import ProfileScreen from '../profile/ProfileScreen';
 import PostScreen from '../post/PostScreen';
-import FollowScreen from '../follow/FollowScreen';
+import PostForm from '../post/PostForm';
+import FollowForm from '../follow/FollowForm';
 
 export default class DashboardScreen extends Component {
   state = {
-    currentScreen: 'Home',
+    currentScreen: 'HOME',
     currentFilter: 'others',
     currentPosts: [],
     followingPosts: [],
-    visible: false,
+    visible: true,
     loggedIn: false,
+    otherProfile: null,
   };
 
   componentWillMount() {
@@ -26,12 +28,22 @@ export default class DashboardScreen extends Component {
     this.callApi('/post/following')
     .then(res => this.setState({followingPosts: res}));
   };
+
+  goToProfile = (username) => {
+    this.callApi(`/profile/${username}`)
+    .then(res => {this.otherProfile = res.rows[0],
+      this.setState({otherProfile: res.rows[0]},
+        this.updateNav('OTHERPROFILE')
+      )
+      }
+    )
+  }
   
   updateNav = (screen, filter='others') => {
     this.setState({
       currentScreen: screen,
       currentFilter: filter,
-    });
+    }, this.toggleVisibility);
   };
 
   callApi = async (endpoint) => {
@@ -45,7 +57,30 @@ export default class DashboardScreen extends Component {
     return body;
   };
 
-  toggleVisibility = () => this.setState({visible: !this.state.visible});
+  toggleVisibility = (elem) => {
+    if(this.state.currentScreen === 'HOME') {
+      this.setState({visible: true});
+    } else {
+      this.setState({visible: false});
+      // this.setState({visible: !this.state.visible});
+    }
+  }
+
+  handleClick = () => {
+    this.setState({newPost: !this.state.newPost})
+  }
+
+  handleSubmit = async (event, endpoint) => {
+    event.preventDefault();
+    const form = new FormData(event.target);
+    await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      body: form,
+    })
+    .then(this.refreshPosts)
+    .then(this.handleClick);
+  };
 
   render() {
     const currentScreen = this.state.currentScreen;
@@ -53,38 +88,50 @@ export default class DashboardScreen extends Component {
     return(
       <div>
         <Menu pointing secondary>
-          <Menu.Item name='home' active={currentScreen === 'Home'} 
-            onClick={(e) => {this.updateNav('Home'); this.toggleVisibility();}}/>
-          <Menu.Item name='follow' active={currentScreen === 'Follow'} onClick={(e) => this.updateNav('Follow')}/>
+          <Menu.Item name='home' active={currentScreen === 'HOME'} 
+            onClick={(e) => {this.updateNav('HOME')}}/>
+          <Menu.Item name='follow' active={currentScreen === 'FOLLOW'}
+            onClick={(e) => {this.updateNav('FOLLOW')}}/>
           <Menu.Menu position='right'>
-            <Menu.Item name='profile' active={currentScreen === 'Profile'}
-              onClick={(e) => this.updateNav('Profile')}/>
-            <Menu.Item name='logout' active={currentScreen === 'logout'} onClick={this.props.logout}/>
+            <Menu.Item name='profile' active={currentScreen === 'PROFILE'}
+              onClick={(e) => this.updateNav('PROFILE')}/>
+            <Menu.Item name='logout' active={currentScreen === 'LOGOUT'} onClick={this.props.logout}/>
           </Menu.Menu>
         </Menu>
+        {currentScreen === 'HOME' ? (
         <Sidebar.Pushable as={Segment}>
           <Sidebar as={Menu} animation='overlay' direction='top' visible={visible} inverted>
-            <Menu.Item name='currentPosts' onClick={(e) => this.updateNav('Home', 'own')}>
+            <Menu.Item name='newPost' onClick={this.handleClick}>
+              New Post
+            </Menu.Item>
+            <Menu.Item name='currentPosts' onClick={(e) => this.updateNav('HOME', 'own')}>
               My Posts
             </Menu.Item>
-            <Menu.Item name='followingPosts' onClick={(e) => this.updateNav('Home', 'others')}>
+            <Menu.Item name='followingPosts' onClick={(e) => this.updateNav('HOME', 'others')}>
               Current Feed
             </Menu.Item>
           </Sidebar>
           <Sidebar.Pusher>
-            <Segment basic>
-              <Header as='h3'>Application Content</Header>
-              {currentScreen === 'Home' ? (
-                <PostScreen refreshPosts={this.refreshPosts} currentPosts={this.state.currentPosts}
-                  followingPosts={this.state.followingPosts} currentFilter={this.state.currentFilter}/>
-              ) : null}
+            <Segment attached='top'></Segment>
+            <Segment attached>
+              {this.state.newPost ? (
+              <Segment attached>
+                <PostForm user={this.props.user} handleSubmit={this.handleSubmit}/>
+                <Button onClick={this.handleClick}>Cancel</Button>
+              </Segment>
+              ) : null }
+              <PostScreen refreshPosts={this.refreshPosts} currentPosts={this.state.currentPosts}
+                followingPosts={this.state.followingPosts} currentFilter={this.state.currentFilter}
+                goToProfile={this.goToProfile} newPost={this.state.newPost}/>
             </Segment>
           </Sidebar.Pusher>
         </Sidebar.Pushable>
-        {currentScreen === 'Follow' ? (
-          <FollowScreen />
-        ) : currentScreen === 'Profile' ? (
+        ) : currentScreen === 'FOLLOW' ? (
+          <FollowForm />
+        ) : currentScreen === 'PROFILE' ? (
           <ProfileScreen user={this.props.user} refreshUser={this.props.refreshUser}/>
+        ) : currentScreen === 'OTHERPROFILE' ? (
+          <ProfileScreen user={this.otherProfile}/>
         ) : null}
       </div>
     )

@@ -1,9 +1,9 @@
-// client/src/components/follow/FollowScreen.js
+// client/src/components/follow/FollowForm.js
 
 import React, { Component } from 'react';
 import { Form } from 'semantic-ui-react';
 
-export default class FollowScreen extends Component {
+export default class FollowForm extends Component {
 
   handleSubmit = async (event, endpoint) => {
     event.preventDefault();

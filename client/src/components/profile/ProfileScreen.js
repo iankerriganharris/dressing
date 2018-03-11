@@ -38,6 +38,7 @@ export default class ProfileScreen extends Component {
 
   render() {
     const editProfile = this.state.editProfile;
+    console.log(this.props.user)
     return(
       <div>
         {editProfile ? (

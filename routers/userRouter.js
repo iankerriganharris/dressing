@@ -4,7 +4,6 @@
 const express = require('express');
 const router = express.Router();
 const Busboy = require('busboy');
-// const inspect = require('util').inspect;
 const mysql = require('mysql');
 const dbconfig = require('../config/database');
 const isLoggedIn = require('../helpers/isLoggedIn');
@@ -25,6 +24,28 @@ router.get('/', function(req, res) {
     }, hideJsonValue
     )
   );
+});
+
+router.get('/:username', function(req, res) {
+  const connection = mysql.createConnection(dbconfig.connection);
+  connection.query('USE ' + dbconfig.database);
+  const selectQuery = 'SELECT * FROM users WHERE username=?';
+  connection.query(
+    selectQuery, [req.params.username],
+      function(err, rows) {
+        if (err) {
+          console.log(err);
+        } else {
+            return (res.send(
+              JSON.stringify(
+                {'status': 200, 'error': null,
+                  rows,
+              }, hideJsonValue
+              )
+            )
+          );
+        }
+      });
 });
 
 // Post user.

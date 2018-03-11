@@ -13,6 +13,7 @@ export default class DashboardScreen extends Component {
     currentFilter: 'others',
     currentPosts: [],
     followingPosts: [],
+    timeline: [],
     visible: true,
     loggedIn: false,
     otherProfile: null,
@@ -23,10 +24,8 @@ export default class DashboardScreen extends Component {
   }
 
   refreshPosts = () => {
-    this.callApi('/post')
-    .then(res => this.setState({currentPosts: res}));
-    this.callApi('/post/following')
-    .then(res => this.setState({followingPosts: res}));
+    this.callApi('/post/timeline')
+    .then(res => this.setState({timeline: res}));
   };
 
   goToProfile = (username) => {
@@ -104,12 +103,6 @@ export default class DashboardScreen extends Component {
             <Menu.Item name='newPost' onClick={this.handleClick}>
               New Post
             </Menu.Item>
-            <Menu.Item name='currentPosts' onClick={(e) => this.updateNav('HOME', 'own')}>
-              My Posts
-            </Menu.Item>
-            <Menu.Item name='followingPosts' onClick={(e) => this.updateNav('HOME', 'others')}>
-              Current Feed
-            </Menu.Item>
           </Sidebar>
           <Sidebar.Pusher>
             <Segment attached='top'></Segment>
@@ -120,9 +113,8 @@ export default class DashboardScreen extends Component {
                 <Button onClick={this.handleClick}>Cancel</Button>
               </Segment>
               ) : null }
-              <PostScreen refreshPosts={this.refreshPosts} currentPosts={this.state.currentPosts}
-                followingPosts={this.state.followingPosts} currentFilter={this.state.currentFilter}
-                goToProfile={this.goToProfile} newPost={this.state.newPost}/>
+              <PostScreen refreshPosts={this.refreshPosts} currentFilter={this.state.currentFilter}
+                goToProfile={this.goToProfile} newPost={this.state.newPost} timeline={this.state.timeline}/>
             </Segment>
           </Sidebar.Pusher>
         </Sidebar.Pushable>

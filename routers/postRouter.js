@@ -53,6 +53,34 @@ router.get('/following', function(req, res) {
   );
 });
 
+router.get('/timeline', function(req, res) {
+  const connection = mysql.createConnection(dbconfig.connection);
+  connection.query('USE ' + dbconfig.database);
+  const selectQuery =
+  `SELECT *
+  FROM (
+    (SELECT p.id, p.description, p.date, u.username
+      FROM posts p
+        INNER JOIN follows f ON f.id_user = p.fk__user__post
+        INNER JOIN users u ON f.id_user = u.id
+          WHERE f.id_follower = ?)
+    UNION
+    (SELECT p.id, p.description, p.date, u.username FROM posts p, users u
+      WHERE p.fk__user__post = ? AND u.id = ?)
+  ) U
+  ORDER BY date DESC`;
+  connection.query(
+    selectQuery, [req.user.id, req.user.id, req.user.id],
+    function(err, rows) {
+      if (err) {
+        console.log('SQL errors: ' + err);
+      } else {
+        return (res.json(rows));
+      }
+    }
+  );
+});
+
 // Post post.
 router.post('/new', function(req, res) {
   const connection = mysql.createConnection(dbconfig.connection);

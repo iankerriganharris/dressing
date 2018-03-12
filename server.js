@@ -37,21 +37,11 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
 
-/* app.use(function(req, res, next) {
-    res.locals.connection = mysql.createConnection( {
-        host: 'localhost',
-        user: 'root',
-        password: '#6gOdfish',
-        database: 'dressing',
-    });
-    res.locals.connection.connect((error) => {
-        if (error) throw error;
-    });
-    next();
-}); */
-
 // Routes.
 require('./routes')(app, passport, busboy);
+
+// Search.
+require('./search');
 
 // Launch.
 app.listen(port, () => console.log(`Listening on port ${port}`));

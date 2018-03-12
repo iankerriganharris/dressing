@@ -36,26 +36,34 @@ export default class PostScreen extends Component {
     .then(this.handleClick);
   };
 
+  setTimeline = () => {
+    if( this.props.filteredTimeline !== null) {
+      return this.props.filteredTimeline;
+    } else {
+      return this.props.timeline;
+    }
+  }
+
   render() {
     const newPost = this.props.newPost;
     const filterPosts = this.props.currentFilter;
     const goToProfile = this.props.goToProfile;
-    const timeline = this.props.timeline;
+    const timeline = this.setTimeline();
     return(
       <div>
         {timeline ? (
-          <Feed>{timeline.map(post => (
-            <Feed.Event>
-              <Feed.Content>
-                <Feed.Summary key={post.id}>
-                  <Feed.User onClick={(e) => goToProfile(post.username)}>{post.username}</Feed.User>
-                  <Feed.Date>{post.date}</Feed.Date>
-                </Feed.Summary>
-                <Feed.Extra text>
-                  {post.description}
-                </Feed.Extra>
-              </Feed.Content>
-            </Feed.Event>
+            <Feed>{timeline.map(post => (
+              <Feed.Event>
+                <Feed.Content>
+                  <Feed.Summary key={post.id}>
+                    <Feed.User onClick={(e) => goToProfile(post.username)}>{post.username}</Feed.User>
+                    <Feed.Date>{post.date}</Feed.Date>
+                  </Feed.Summary>
+                  <Feed.Extra text>
+                    {post.description}
+                  </Feed.Extra>
+                </Feed.Content>
+              </Feed.Event>
           ))}</Feed>
         ) : null}
       </div>

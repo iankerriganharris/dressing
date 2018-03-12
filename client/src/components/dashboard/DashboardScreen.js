@@ -1,7 +1,9 @@
 // client/src/components/dashboard/DashboardScreen.js
 
 import React, { Component } from 'react'
-import { Button, Segment, Menu, Header, Sidebar, Icon, Image } from 'semantic-ui-react'
+import { PostFilter } from '../common/filters'
+import InlineFilter from '../InlineFilter'
+import { Button, Segment, Menu, Header, Sidebar, Icon, Image, Container, Dropdown } from 'semantic-ui-react'
 import ProfileScreen from '../profile/ProfileScreen';
 import PostScreen from '../post/PostScreen';
 import PostForm from '../post/PostForm';
@@ -10,10 +12,12 @@ import FollowForm from '../follow/FollowForm';
 export default class DashboardScreen extends Component {
   state = {
     currentScreen: 'HOME',
-    currentFilter: 'others',
+    currentFilter: RegExp(/./),
+    postFilters: ['everyone', 'me', 'people I follow'],
     currentPosts: [],
     followingPosts: [],
     timeline: [],
+    filteredTimeline: null,
     visible: true,
     loggedIn: false,
     otherProfile: null,
@@ -81,6 +85,24 @@ export default class DashboardScreen extends Component {
     .then(this.handleClick);
   };
 
+  applyFilter = (filter) => {
+    console.log(filter)
+    if(filter === 'me') {
+      // this.setState({currentFilter: RegExp(this.props.user.username)});
+      let filteredTimeline = this.state.timeline.filter(post => RegExp(this.props.user.username).test(post.username))
+      this.setState({filteredTimeline: filteredTimeline});
+    } else if(filter === 'people I follow') {
+      // this.setState({currentFilter: RegExp(/./)});
+      let filteredTimeline = this.state.timeline.filter(post => !RegExp(this.props.user.username).test(post.username))
+      this.setState({filteredTimeline: filteredTimeline});
+    } else {
+      // let filteredTimeline = this.state.timeline.filter(post => RegExp(/./).test(post.username))
+      this.setState({filteredTimeline: this.state.timeline});
+      console.log('Filter action not defined. Displaying everyone.')
+    }
+    
+  }
+
   render() {
     const currentScreen = this.state.currentScreen;
     const visible = this.state.visible;
@@ -98,26 +120,17 @@ export default class DashboardScreen extends Component {
           </Menu.Menu>
         </Menu>
         {currentScreen === 'HOME' ? (
-        <Sidebar.Pushable as={Segment}>
-          <Sidebar as={Menu} animation='overlay' direction='top' visible={visible} inverted>
-            <Menu.Item name='newPost' onClick={this.handleClick}>
-              New Post
-            </Menu.Item>
-          </Sidebar>
-          <Sidebar.Pusher>
-            <Segment attached='top'></Segment>
-            <Segment attached>
-              {this.state.newPost ? (
-              <Segment attached>
-                <PostForm user={this.props.user} handleSubmit={this.handleSubmit}/>
-                <Button onClick={this.handleClick}>Cancel</Button>
-              </Segment>
-              ) : null }
-              <PostScreen refreshPosts={this.refreshPosts} currentFilter={this.state.currentFilter}
-                goToProfile={this.goToProfile} newPost={this.state.newPost} timeline={this.state.timeline}/>
-            </Segment>
-          </Sidebar.Pusher>
-        </Sidebar.Pushable>
+          <Segment.Group>
+            <Segment top><InlineFilter filterObject={PostFilter} applyFilter={this.applyFilter}/></Segment>
+            <Segment.Group>
+                <Segment basic>
+                  <PostScreen refreshPosts={this.refreshPosts} currentFilter={this.state.currentFilter}
+                    goToProfile={this.goToProfile} newPost={this.state.newPost} timeline={this.state.timeline}
+                    filteredTimeline={this.state.filteredTimeline}
+                    />
+                </Segment>
+            </Segment.Group>
+          </Segment.Group>
         ) : currentScreen === 'FOLLOW' ? (
           <FollowForm />
         ) : currentScreen === 'PROFILE' ? (

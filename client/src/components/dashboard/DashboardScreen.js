@@ -3,11 +3,12 @@
 import React, { Component } from 'react'
 import { PostFilter } from '../common/filters'
 import InlineFilter from '../InlineFilter'
-import { Button, Segment, Menu, Header, Sidebar, Icon, Image, Container, Dropdown } from 'semantic-ui-react'
+import { Button, Segment, Menu, Header, Sidebar, Icon, Image, Container, Dropdown, Label } from 'semantic-ui-react'
 import ProfileScreen from '../profile/ProfileScreen';
 import PostScreen from '../post/PostScreen';
 import PostForm from '../post/PostForm';
 import FollowForm from '../follow/FollowForm';
+import SearchBar from '../search/SearchBar';
 
 export default class DashboardScreen extends Component {
   state = {
@@ -119,6 +120,7 @@ export default class DashboardScreen extends Component {
             <Menu.Item name='logout' active={currentScreen === 'LOGOUT'} onClick={this.props.logout}/>
           </Menu.Menu>
         </Menu>
+        <SearchBar />
         {currentScreen === 'HOME' ? (
           <Segment.Group>
             <Segment top><InlineFilter filterObject={PostFilter} applyFilter={this.applyFilter}/></Segment>

@@ -36,11 +36,21 @@ router.use(isLoggedIn, function(req, res, next) {
   }
 });
 
-const q = {query: [{AND: {'*': ['harrisiank']}}]};
+// const q = {query: [{AND: {'*': ['harrisiank']}}]};
 router.get('/', function(req, res) {
-  mySearchIndex.search(q)
-  .on('data', function(data) {
-    console.log(data);
+  const q = {query: [{AND: {'*': [req.query.qs]}}]};
+  let body = {matches: []};
+  mySearchIndex.match({beginsWith: req.query.qs, field: 'username'})
+  .on('data', (chunk) => {
+    body.matches.push({title: chunk});
+  }).on('end', function() {
+    try {
+      console.log(JSON.stringify(body));
+      res.json(body);
+    } catch (err) {
+      console.log(err);
+      res.json({'status': 200});
+    }
   });
 });
 

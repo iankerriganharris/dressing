@@ -4,7 +4,6 @@
 const dotenv = require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
-// const mysql = require('mysql');
 const passport = require('passport');
 const morgan = require('morgan');
 const flash = require('connect-flash');
@@ -39,9 +38,6 @@ app.use(flash());
 
 // Routes.
 require('./routes')(app, passport, busboy);
-
-// Search.
-require('./search');
 
 // Launch.
 app.listen(port, () => console.log(`Listening on port ${port}`));

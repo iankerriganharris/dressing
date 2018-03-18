@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react';
 import { Search, Grid, Header } from 'semantic-ui-react';
+import '../../App.css';
 
 export default class SearchBar extends Component {
   componentWillMount() {
@@ -12,18 +13,23 @@ export default class SearchBar extends Component {
   handleResultSelect = (e, { result }) => this.setState({ value: result.title })
 
   handleSearchChange = (e, { value }) => {
-    this.setState({ isLoading: true, value })
+    if (value.length >= this.props.minCharacters) {
+      this.setState({ isLoading: true });
+    };
+    
+    this.setState({ value });
 
     setTimeout(() => {
       if (this.state.value.length < 1) return this.resetComponent()
-
-      /* Autosuggest.
-      this.callApi(`/search/autosuggest?qs=${value}`)
-      .then(res => this.setState({ isLoading: false, results: res.matches }));
-      */
-     /* Search. */
-     this.callApi(`/search?qs=${value}`)
-     .then(res => this.setState({ isLoading: false, results: res.matches}));
+      if (this.state.value.length >= this.props.minCharacters) {
+        /* Autosuggest.
+        this.callApi(`/search/autosuggest?qs=${value}`)
+        .then(res => this.setState({ isLoading: false, results: res.matches }));
+        */
+       /* Search. */
+       this.callApi(`/search?qs=${value}`)
+       .then(res => this.setState({ isLoading: false, results: res.matches}));
+      }
     
     }, 500)
   }
@@ -45,18 +51,15 @@ export default class SearchBar extends Component {
     console.log(this.state.value);
 
     return (
-      <Grid>
-        <Grid.Column width={8}>
-          <Search
-            loading={isLoading}
-            onResultSelect={this.handleResultSelect}
-            onSearchChange={this.handleSearchChange}
-            results={results}
-            value={value}
-            {...this.props}
-          />
-        </Grid.Column>
-      </Grid>
+      <Search
+        loading={isLoading}
+        onResultSelect={this.handleResultSelect}
+        onSearchChange={this.handleSearchChange}
+        results={results}
+        value={value}
+        {...this.props}
+        className='top-search-bar'
+      />
     )
   }
 }

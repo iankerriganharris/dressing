@@ -26,7 +26,7 @@ class LoginScreen extends Component {
       <Grid centered>
         <Grid.Row>
         {activeForm === 'LOGIN' ? (
-          <Grid.Column textAlign='centered' width={4}>
+          <Grid.Column textAlign='center' width={4}>
             <LoginForm />
             <Divider horizontal></Divider>
             <Button type="button" onClick={(e) => this.handleClick('SIGNUP')}>Signup</Button>

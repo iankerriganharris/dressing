@@ -3,7 +3,7 @@
 import React, { Component } from 'react'
 import { PostFilter } from '../common/filters'
 import InlineFilter from '../InlineFilter'
-import { Button, Segment, Menu, Header, Sidebar, Icon, Image, Container, Dropdown, Label } from 'semantic-ui-react'
+import { Button, Segment, Menu, Header, Sidebar, Icon, Image, Container, Dropdown, Label, Grid } from 'semantic-ui-react'
 import ProfileScreen from '../profile/ProfileScreen';
 import PostScreen from '../post/PostScreen';
 import PostForm from '../post/PostForm';
@@ -109,18 +109,24 @@ export default class DashboardScreen extends Component {
     const visible = this.state.visible;
     return(
       <div>
-        <Menu pointing secondary>
-          <Menu.Item name='home' active={currentScreen === 'HOME'} 
-            onClick={(e) => {this.updateNav('HOME')}}/>
-          <Menu.Item name='follow' active={currentScreen === 'FOLLOW'}
-            onClick={(e) => {this.updateNav('FOLLOW')}}/>
-          <Menu.Menu position='right'>
-            <Menu.Item name='profile' active={currentScreen === 'PROFILE'}
-              onClick={(e) => this.updateNav('PROFILE')}/>
-            <Menu.Item name='logout' active={currentScreen === 'LOGOUT'} onClick={this.props.logout}/>
-          </Menu.Menu>
-        </Menu>
-        <SearchBar />
+        <Grid>
+          <Grid.Column>
+            <Menu pointing secondary>
+              <Menu.Menu position='left'>
+                <Menu.Item name='home' active={currentScreen === 'HOME'} 
+                  onClick={(e) => {this.updateNav('HOME')}}/>
+                  <Menu.Item name='follow' active={currentScreen === 'FOLLOW'}
+                    onClick={(e) => {this.updateNav('FOLLOW')}}/>
+                </Menu.Menu>
+                <SearchBar size='tiny' minCharacters={3} />
+                <Menu.Menu position='right'>
+                  <Menu.Item name='profile' active={currentScreen === 'PROFILE'}
+                    onClick={(e) => this.updateNav('PROFILE')}/>
+                  <Menu.Item name='logout' active={currentScreen === 'LOGOUT'} onClick={this.props.logout}/>
+                </Menu.Menu>
+              </Menu>
+            </Grid.Column>
+        </Grid>
         {currentScreen === 'HOME' ? (
           <Segment.Group>
             <Segment top><InlineFilter filterObject={PostFilter} applyFilter={this.applyFilter}/></Segment>

@@ -7,16 +7,16 @@ import { Button, Segment, Menu, Header, Sidebar, Icon, Image, Container, Dropdow
 import ProfileScreen from '../profile/ProfileScreen';
 import PostScreen from '../post/PostScreen';
 import PostForm from '../post/PostForm';
-import FollowForm from '../follow/FollowForm';
+import DISCOVERForm from '../follow/FollowForm';
 import SearchBar from '../search/SearchBar';
 
 export default class DashboardScreen extends Component {
   state = {
-    currentScreen: 'HOME',
+    currentScreen: 'TIMELINE',
     currentFilter: RegExp(/./),
     postFilters: ['everyone', 'me', 'people I follow'],
     currentPosts: [],
-    followingPosts: [],
+    DISCOVERingPosts: [],
     timeline: [],
     filteredTimeline: null,
     visible: true,
@@ -62,7 +62,7 @@ export default class DashboardScreen extends Component {
   };
 
   toggleVisibility = (elem) => {
-    if(this.state.currentScreen === 'HOME') {
+    if(this.state.currentScreen === 'TIMELINE') {
       this.setState({visible: true});
     } else {
       this.setState({visible: false});
@@ -107,18 +107,19 @@ export default class DashboardScreen extends Component {
   render() {
     const currentScreen = this.state.currentScreen;
     const visible = this.state.visible;
+    const resultRenderer = ({ title }) => <Label content={title} />
     return(
       <div>
         <Grid>
           <Grid.Column>
             <Menu pointing secondary>
               <Menu.Menu position='left'>
-                <Menu.Item name='home' active={currentScreen === 'HOME'} 
-                  onClick={(e) => {this.updateNav('HOME')}}/>
-                  <Menu.Item name='follow' active={currentScreen === 'FOLLOW'}
-                    onClick={(e) => {this.updateNav('FOLLOW')}}/>
+                <Menu.Item name='Timeline' active={currentScreen === 'TIMELINE'} 
+                  onClick={(e) => {this.updateNav('TIMELINE')}}/>
+                  <Menu.Item name='Discover' active={currentScreen === 'DISCOVER'}
+                    onClick={(e) => {this.updateNav('DISCOVER')}}/>
                 </Menu.Menu>
-                <SearchBar size='tiny' minCharacters={3} />
+                <SearchBar size='tiny' minCharacters={3} goToProfile={this.goToProfile}/>
                 <Menu.Menu position='right'>
                   <Menu.Item name='profile' active={currentScreen === 'PROFILE'}
                     onClick={(e) => this.updateNav('PROFILE')}/>
@@ -127,7 +128,7 @@ export default class DashboardScreen extends Component {
               </Menu>
             </Grid.Column>
         </Grid>
-        {currentScreen === 'HOME' ? (
+        {currentScreen === 'TIMELINE' ? (
           <Segment.Group>
             <Segment top><InlineFilter filterObject={PostFilter} applyFilter={this.applyFilter}/></Segment>
             <Segment.Group>
@@ -139,8 +140,8 @@ export default class DashboardScreen extends Component {
                 </Segment>
             </Segment.Group>
           </Segment.Group>
-        ) : currentScreen === 'FOLLOW' ? (
-          <FollowForm />
+        ) : currentScreen === 'DISCOVER' ? (
+          <DISCOVERForm />
         ) : currentScreen === 'PROFILE' ? (
           <ProfileScreen user={this.props.user} refreshUser={this.props.refreshUser}/>
         ) : currentScreen === 'OTHERPROFILE' ? (

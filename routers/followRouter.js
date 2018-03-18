@@ -33,8 +33,22 @@ router.post('/', function(req, res) {
     console.log('Busboy finished parsing.');
     console.log(newFollowMysql);
     console.time('dbinsert');
+    const selectQuery = 'SELECT id FROM USERS WHERE username = ?';
     const insertQuery =
     'INSERT INTO follows (id_user, id_follower) VALUES (?, ?)';
+    connection.query(selectQuery, newFollowMysql.follow, function(err, rows) {
+      if (err) {
+        console.log('SQL errors: ' + err);
+      } else {
+        connection.query(insertQuery, [rows[0].id, req.user.id],
+          function(err, rows) {
+            if (err) {
+              console.log('SQL errors: ' + err);
+            }
+          });
+      }
+    });
+    /*
     connection.query(
       insertQuery, [newFollowMysql.follow, req.user.id],
       function(err, rows) {
@@ -42,6 +56,7 @@ router.post('/', function(req, res) {
           console.log('SQL errors: ' + err);
         }
       });
+    */
     console.timeEnd('dbinsert');
     }
   );

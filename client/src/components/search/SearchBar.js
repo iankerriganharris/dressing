@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Search, Grid, Header } from 'semantic-ui-react';
+import { Search, Grid, Header, Label, Button, Form } from 'semantic-ui-react';
 import '../../App.css';
 
 export default class SearchBar extends Component {
@@ -10,7 +10,21 @@ export default class SearchBar extends Component {
 
   resetComponent = () => this.setState({ isLoading: false, results: [], value: '' })
 
-  handleResultSelect = (e, { result }) => this.setState({ value: result.title })
+  handleResultSelect = (e, { result }) => {
+    // this.setState({ value: result.title });
+    // this.props.goToProfile(result.title);
+    this.resetComponent();
+  }
+
+  handleSubmit = async (event, endpoint) => {
+    event.preventDefault();
+    const form = new FormData(event.target);
+    await fetch(endpoint, {
+      method: 'POST',
+      credentials: 'include',
+      body: form,
+    })
+  };
 
   handleSearchChange = (e, { value }) => {
     if (value.length >= this.props.minCharacters) {
@@ -47,18 +61,25 @@ export default class SearchBar extends Component {
 
   render() {
     const { isLoading, value, results } = this.state
-    console.log(this.state.results);
-    console.log(this.state.value);
-
+    const resultRenderer = ({ title }) => [ 
+      <div key='content' className='content'>
+        {title && <div onClick={(e, title) => this.handleResultSelect} className='title'>{title}</div>}
+        <Form onSubmit={(e) => this.handleSubmit(e, '/follow')}>
+          <Form.Input type='text' name='follow' value={title} type='hidden'/>
+          <Form.Button>Follow</Form.Button>
+        </Form>
+      </div>,
+      ]
     return (
       <Search
         loading={isLoading}
-        onResultSelect={this.handleResultSelect}
+        // onResultSelect={this.handleResultSelect}
         onSearchChange={this.handleSearchChange}
         results={results}
         value={value}
         {...this.props}
         className='top-search-bar'
+        resultRenderer={resultRenderer}
       />
     )
   }

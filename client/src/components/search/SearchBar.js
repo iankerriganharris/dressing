@@ -9,7 +9,7 @@ export default class SearchBar extends Component {
 
   resetComponent = () => this.setState({ isLoading: false, results: [], value: '' })
 
-  handleResultSelect = (e, { result }) => this.setState({ value: result.username })
+  handleResultSelect = (e, { result }) => this.setState({ value: result.title })
 
   handleSearchChange = (e, { value }) => {
     this.setState({ isLoading: true, value })
@@ -17,8 +17,13 @@ export default class SearchBar extends Component {
     setTimeout(() => {
       if (this.state.value.length < 1) return this.resetComponent()
 
-      this.callApi(`/search?qs=${value}`)
+      /* Autosuggest.
+      this.callApi(`/search/autosuggest?qs=${value}`)
       .then(res => this.setState({ isLoading: false, results: res.matches }));
+      */
+     /* Search. */
+     this.callApi(`/search?qs=${value}`)
+     .then(res => this.setState({ isLoading: false, results: res.matches}));
     
     }, 500)
   }
@@ -37,6 +42,7 @@ export default class SearchBar extends Component {
   render() {
     const { isLoading, value, results } = this.state
     console.log(this.state.results);
+    console.log(this.state.value);
 
     return (
       <Grid>

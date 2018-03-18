@@ -88,6 +88,7 @@ module.exports = function(passport) {
           }
           // Incorrect password.
           if (!bcrypt.compareSync(password, rows[0].password)) {
+            console.log('Incorrect password.');
             return done(null, false);
           }
           // Success.

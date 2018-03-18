@@ -37,8 +37,26 @@ router.use(isLoggedIn, function(req, res, next) {
 });
 
 // const q = {query: [{AND: {'*': ['harrisiank']}}]};
+// const q = {query: [{AND: {'*': [req.query.qs]}}]};
 router.get('/', function(req, res) {
-  const q = {query: [{AND: {'*': [req.query.qs]}}]};
+  let body = {matches: []};
+  mySearchIndex.search({query: [{
+    AND: {'*': [req.query.qs]},
+  }]})
+  .on('data', (data) => {
+    console.log(data);
+    body.matches.push({title: data.document.username});
+  }).on('finish', function() {
+    try {
+      res.json(body);
+    } catch (err) {
+      console.log(err);
+      res.json({'status': 200});
+    }
+  });
+});
+
+router.get('/autosuggest', function(req, res) {
   let body = {matches: []};
   mySearchIndex.match({beginsWith: req.query.qs, field: 'username'})
   .on('data', (chunk) => {

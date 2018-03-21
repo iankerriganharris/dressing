@@ -13,13 +13,27 @@ const indexData = function(err, index) {
     if (!err) {
         mySearchIndex = index;
         const connection = mysql.createConnection(dbconfig.connection);
+        // Delete all index contents.
+        index.flush(function(err) {
+          if (!err) console.log('success!');
+        });
         connection.query('USE ' + dbconfig.database);
-        connection.query('SELECT * FROM users')
+        connection.query('SELECT username, firstName, lastName, email FROM users')
         .stream({highWaterMark: 5})
         .pipe(index.defaultPipeline())
         .pipe(index.add())
         .on('finish', function() {
-          console.log('Search index is ready.');
+          console.log('Users added to search index.');
+        });
+        connection.query('SELECT description FROM posts')
+        .stream({highWaterMark: 5})
+        .pipe(index.defaultPipeline())
+        .pipe(index.add())
+        .on('finish', function() {
+          console.log('Posts added to search index.');
+          index.availableFields().on('data', function(field) {
+            console.log(field);
+          });
         });
     }
 };
@@ -45,9 +59,10 @@ router.get('/', function(req, res) {
   }]})
   .on('data', (data) => {
     console.log(data);
-    body.matches.push({title: data.document.username});
+    body.matches.push({document: data.document});
   }).on('finish', function() {
     try {
+      console.log(body);
       res.json(body);
     } catch (err) {
       console.log(err);

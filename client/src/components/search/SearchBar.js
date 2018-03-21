@@ -16,20 +16,12 @@ export default class SearchBar extends Component {
     this.resetComponent();
   }
 
-  handleSubmit = async (event, endpoint) => {
-    event.preventDefault();
-    const form = new FormData(event.target);
-    await fetch(endpoint, {
-      method: 'POST',
-      credentials: 'include',
-      body: form,
-    })
-  };
-
   handleSearchChange = (e, { value }) => {
     if (value.length >= this.props.minCharacters) {
       this.setState({ isLoading: true });
     };
+
+    console.log(value);
     
     this.setState({ value });
 
@@ -61,19 +53,17 @@ export default class SearchBar extends Component {
 
   render() {
     const { isLoading, value, results } = this.state
-    const resultRenderer = ({ title }) => [ 
-      <div key='content' className='content'>
-        {title && <div onClick={(e, title) => this.handleResultSelect} className='title'>{title}</div>}
-        <Form onSubmit={(e) => this.handleSubmit(e, '/follow')}>
-          <Form.Input type='text' name='follow' value={title} type='hidden'/>
-          <Form.Button>Follow</Form.Button>
-        </Form>
-      </div>,
-      ]
+    const resultRenderer = ({ document }) => {
+      if (document.username) {
+        return <Label key='content' content={document.username}/>
+      } else if (document.description) {
+        return <Label key='content' content={document.description}/>
+      }
+    }
     return (
       <Search
         loading={isLoading}
-        // onResultSelect={this.handleResultSelect}
+        onResultSelect={this.handleResultSelect}
         onSearchChange={this.handleSearchChange}
         results={results}
         value={value}

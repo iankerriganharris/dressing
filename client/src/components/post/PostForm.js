@@ -1,19 +1,36 @@
 // client/src/components/post/PostForm.js
 
 import React, { Component } from 'react';
-import { Button } from 'semantic-ui-react';
+import { Form, Button, Message } from 'semantic-ui-react';
 
 export default class PostForm extends Component {
   
   render() {
-    return(
-      <form onSubmit={(e) => this.props.handleSubmit(e, '/post/new')}>
-        <label>Description</label>
-        <input type='text' name='description'/><br/>
-        <label>URL</label>
-        <input type='text' name='url'/><br/>
-        <Button>Save</Button>
-      </form>
-    )
+    if(this.props.postSuccess) {
+      return(
+        <Form success onSubmit={(e) => this.props.handleSubmit(e, '/post/new')}>
+          <Form.Group>
+            <Form.Input placeholder='description' type='text' name='description'/>
+            <Form.Button content='Post'/>
+          </Form.Group>
+          <Message
+            success
+            compact
+            attached='bottom'
+            header='Post Saved Successfully'
+            content="Check your timeline for responses"
+          />
+        </Form>
+      )
+    } else {
+      return(
+        <Form onSubmit={(e) => this.props.handleSubmit(e, '/post/new')}>
+          <Form.Group>
+            <Form.Input placeholder='description' type='text' name='description'/>
+            <Form.Button content='Post'/>
+          </Form.Group>
+        </Form>
+      )
+    }
   }
 }

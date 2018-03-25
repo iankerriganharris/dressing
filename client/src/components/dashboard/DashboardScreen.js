@@ -22,6 +22,7 @@ export default class DashboardScreen extends Component {
     visible: true,
     loggedIn: false,
     otherProfile: null,
+    postSuccess: null,
   };
 
   componentWillMount() {
@@ -34,13 +35,17 @@ export default class DashboardScreen extends Component {
   };
 
   goToProfile = (username) => {
-    this.callApi(`/profile/${username}`)
-    .then(res => {this.otherProfile = res.rows[0],
-      this.setState({otherProfile: res.rows[0]},
-        this.updateNav('OTHERPROFILE')
+    if (username == this.props.user.username) {
+      this.updateNav('PROFILE');
+    } else {
+      this.callApi(`/profile/${username}`)
+      .then(res => {this.otherProfile = res.rows[0],
+        this.setState({otherProfile: res.rows[0]},
+          this.updateNav('OTHERPROFILE')
+        )
+        }
       )
-      }
-    )
+    }
   }
   
   updateNav = (screen, filter='others') => {
@@ -83,22 +88,24 @@ export default class DashboardScreen extends Component {
       body: form,
     })
     .then(this.refreshPosts)
-    .then(this.handleClick);
+    .then(this.handleClick)
+    .then(this.setState({postSuccess: true}))
+    .then(setTimeout(function() {this.setState({postSuccess: null});}.bind(this), 5000));
   };
 
   applyFilter = (filter) => {
     console.log(filter)
     if(filter === 'me') {
-      // this.setState({currentFilter: RegExp(this.props.user.username)});
+      this.setState({currentFilter: 'me'});
       let filteredTimeline = this.state.timeline.filter(post => RegExp(this.props.user.username).test(post.username))
       this.setState({filteredTimeline: filteredTimeline});
     } else if(filter === 'people I follow') {
-      // this.setState({currentFilter: RegExp(/./)});
+      this.setState({currentFilter: 'people I follow'});
       let filteredTimeline = this.state.timeline.filter(post => !RegExp(this.props.user.username).test(post.username))
       this.setState({filteredTimeline: filteredTimeline});
     } else {
-      // let filteredTimeline = this.state.timeline.filter(post => RegExp(/./).test(post.username))
-      this.setState({filteredTimeline: this.state.timeline});
+      this.setState({currentFilter: 'everyone'})
+      this.setState({filteredTimeline: null});
       console.log('Filter action not defined. Displaying everyone.')
     }
     
@@ -112,9 +119,9 @@ export default class DashboardScreen extends Component {
       <div>
         <Grid>
           <Grid.Column>
-            <Menu pointing secondary>
+            <Menu fixed='top'>
               <Menu.Menu position='left'>
-                <Menu.Item name='Timeline' active={currentScreen === 'TIMELINE'} 
+                <Menu.Item name='Timeline' active={currentScreen === 'TIMELINE' || currentScreen === 'OTHERPROFILE'} 
                   onClick={(e) => {this.updateNav('TIMELINE')}}/>
                   <Menu.Item name='Discover' active={currentScreen === 'DISCOVER'}
                     onClick={(e) => {this.updateNav('DISCOVER')}}/>
@@ -126,27 +133,45 @@ export default class DashboardScreen extends Component {
                   <Menu.Item name='logout' active={currentScreen === 'LOGOUT'} onClick={this.props.logout}/>
                 </Menu.Menu>
               </Menu>
-            </Grid.Column>
-        </Grid>
-        {currentScreen === 'TIMELINE' ? (
-          <Segment.Group>
-            <Segment top><InlineFilter filterObject={PostFilter} applyFilter={this.applyFilter}/></Segment>
-            <Segment.Group>
+          <Grid padded>
+          {currentScreen === 'TIMELINE' ? (
+            <Grid.Column>
+              <Grid.Row>
+                <PostForm postSuccess={this.state.postSuccess} handleSubmit={this.handleSubmit}/>
+              </Grid.Row>
+              <Grid.Row>
                 <Segment basic>
+                  <InlineFilter filterObject={PostFilter} applyFilter={this.applyFilter}/>
+                </Segment>
+              </Grid.Row>
+              <Grid.Row >
+                <Segment basic color='yellow'>
                   <PostScreen refreshPosts={this.refreshPosts} currentFilter={this.state.currentFilter}
                     goToProfile={this.goToProfile} newPost={this.state.newPost} timeline={this.state.timeline}
-                    filteredTimeline={this.state.filteredTimeline}
+                    filteredTimeline={this.state.filteredTimeline} handleSubmit={this.handleSubmit}
                     />
                 </Segment>
-            </Segment.Group>
-          </Segment.Group>
-        ) : currentScreen === 'DISCOVER' ? (
-          <DISCOVERForm />
-        ) : currentScreen === 'PROFILE' ? (
-          <ProfileScreen user={this.props.user} refreshUser={this.props.refreshUser}/>
-        ) : currentScreen === 'OTHERPROFILE' ? (
-          <ProfileScreen user={this.otherProfile}/>
-        ) : null}
+              </Grid.Row>
+            </Grid.Column>
+          ) : currentScreen === 'DISCOVER' ? (
+            <Grid.Column>
+              <DISCOVERForm />
+            </Grid.Column>
+          ) : currentScreen === 'PROFILE' ? (
+            <Grid.Column>
+              <ProfileScreen user={this.props.user} refreshUser={this.props.refreshUser} canEdit={true}/>
+            </Grid.Column>
+          ) : currentScreen === 'OTHERPROFILE' ? (
+            <Grid.Column>
+              <ProfileScreen user={this.otherProfile} canEdit={false}/>
+            </Grid.Column>
+          ) : null}
+          </Grid>
+          </Grid.Column>        
+        </Grid>
+        <Menu fixed='bottom'>
+          <Menu.Item name='Footer Item'/>
+        </Menu>
       </div>
     )
   }

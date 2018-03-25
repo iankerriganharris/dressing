@@ -38,7 +38,8 @@ export default class ProfileScreen extends Component {
 
   render() {
     const editProfile = this.state.editProfile;
-    console.log(this.props.user)
+    const canEdit = this.props.canEdit;
+    console.log(canEdit);
     return(
       <div>
         {editProfile ? (
@@ -53,7 +54,9 @@ export default class ProfileScreen extends Component {
             <label>Email: </label>{this.props.user.email}<br/>
             <label>Address: </label>{this.props.user.address}<br/>
             <label>Postal code: </label>{this.props.user.zipCode}<br/>
-            <Button onClick={this.handleClick}>Edit profile</Button>
+            {canEdit ? (
+              <Button onClick={this.handleClick}>Edit profile</Button>
+            ) : null }
           </div>}
       </div>
     )

@@ -12,7 +12,9 @@ export default class SearchBar extends Component {
 
   handleResultSelect = (e, { result }) => {
     // this.setState({ value: result.title });
-    // this.props.goToProfile(result.title);
+    if(result.document.username) {
+      this.props.goToProfile(result.document.username)
+    }
     this.resetComponent();
   }
 

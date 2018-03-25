@@ -2,6 +2,7 @@
 
 import React, { Component } from 'react';
 import PostForm from './PostForm';
+import RecForm from '../recommend/RecForm';
 import { Button, Container, Feed, Segment } from 'semantic-ui-react';
 
 export default class PostScreen extends Component {
@@ -9,6 +10,7 @@ export default class PostScreen extends Component {
   componentWillMount() {
     this.setState( {
       newPost: false,
+      recFormActive: null,
     });
   };
 
@@ -49,6 +51,7 @@ export default class PostScreen extends Component {
     const filterPosts = this.props.currentFilter;
     const goToProfile = this.props.goToProfile;
     const timeline = this.setTimeline();
+    const makeRec = this.props.makeRec;
     return(
       <div>
         {timeline ? (
@@ -62,6 +65,9 @@ export default class PostScreen extends Component {
                   <Feed.Extra text>
                     {post.description}
                   </Feed.Extra>
+                  {post.id === this.state.recFormActive ? (
+                    <RecForm post_id={post.id} handleSubmit={this.props.handleSubmit}/>
+                  ) : <Button onClick={(e) => this.setState({recFormActive: post.id})} content='Recommend'/>}
                 </Feed.Content>
               </Feed.Event>
           ))}</Feed>

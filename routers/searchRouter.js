@@ -54,8 +54,9 @@ router.use(isLoggedIn, function(req, res, next) {
 // const q = {query: [{AND: {'*': [req.query.qs]}}]};
 router.get('/', function(req, res) {
   let body = {matches: []};
+  let searchTerms = req.query.qs.split(/[ ,]+/).filter(Boolean);
   mySearchIndex.search({query: [{
-    AND: {'*': [req.query.qs]},
+    AND: {'*': searchTerms},
   }]})
   .on('data', (data) => {
     console.log(data);
